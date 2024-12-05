@@ -1,0 +1,90 @@
+    .form-group {
+        position: relative;
+
+    }
+
+    .form-group.row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-group .mitad {
+        width: 48%;
+    }
+
+
+    .form-group input,
+    select,
+    textarea {
+
+        padding: 10px 10px 10px 40px;
+        /* Deja espacio para el icono 
+        border: 2px solid #ddd;
+        border-radius: 5px;*/
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .form-objetos {
+        padding: 10px 10px 10px 40px;
+        /* Deja espacio para el icono 
+        border: 2px solid #ddd;
+        border-radius: 5px;*/
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .forms-titulo {
+        color: #042634;
+    }
+
+    .form-group input:focus {
+        border-color: #6a5acd;
+    }
+
+    .form-group select {
+        width: 100%;
+        background: #fff;
+        font-size: 14px;
+        color: #555;
+        border: none;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .form-group textarea {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .form-group textarea:focus {
+        border-color: #6a5acd;
+    }
+
+    .form-group .icon {
+        position: absolute;
+        top: 35%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #aaa;
+    }
+
+    .btnicon {
+        padding-bottom: 15px;
+        margin: 0;
+        border: none;
+        color: #1199d0;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btnicon:hover {
+        color: #0c688d;
+    }
+
+    .btnicon i {
+        position: absolute;
+        top: 35%;
+        left: 10px;
+        transform: translateY(-50%);
+    }

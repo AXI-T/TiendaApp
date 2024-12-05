@@ -1,0 +1,170 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    margin-top: 0px;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+
+
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    width: 300px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 390px;
+    padding: 40px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 77px 55px 33px 55px;
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -o-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+.forms-titulo {
+    color: #042634;
+}
+
+.form-container,
+.table-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+}
+
+.form-container {
+    width: 50%;
+    margin-right: 20px;
+}
+
+.table-container {
+    width: 50%;
+    display: none;
+    /* Se oculta inicialmente */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.form-group {
+    position: relative;
+}
+
+label {
+    text-align: start;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+    padding-left: 15px;
+}
+
+input[type="email"],
+input[type="file"],
+input[type="number"],
+input[type="password"],
+input[type="text"],
+input[type="date"] {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    margin-bottom: 15px;
+    border: none;
+    border-bottom-width: medium;
+    border-bottom-style: none;
+    border-bottom-color: currentcolor;
+    border-bottom: 2px solid #ddd;
+    font-size: 14px;
+    outline: none;
+    transition: border-bottom-color 0.3s;
+}
+
+.form-group textarea {
+    width: 100%;
+    border: none;
+    border-bottom-width: medium;
+    border-bottom-style: none;
+    border-bottom-color: currentcolor;
+    border-bottom: 2px solid #ddd;
+}
+
+.form-group input,
+select,
+textarea {
+    padding: 10px 10px 10px 40px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.form-group.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-group .mitad {
+    width: 48%;
+}
+
+.login-button {
+    padding: 10px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #36d1dc, #5b86e5);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}

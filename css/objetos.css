@@ -1,0 +1,36 @@
+/* Estilos generales... */
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-search {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    color: #36d1dc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-search:hover {
+    background-color: #36d1dc;
+    color: white;
+}
+
+.btn-search i {
+    margin-right: 5px;
+}
+
+.input-search {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
