@@ -1,0 +1,72 @@
+ <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const carritoTabla = document.querySelector("#carrito-body"); // Cuerpo de la tabla del carrito
+            const botonesAgregar = document.querySelectorAll(".add-button"); // Botones de agregar producto
+            const totalElement = document.querySelector("#total-precio"); // Elemento donde se muestra el total
+
+            botonesAgregar.forEach((boton) => {
+                boton.addEventListener("click", function() {
+                    const card = boton.closest(".product-card"); // Encuentra la tarjeta del producto
+                    const nombre = card.querySelector(".product-name").textContent.trim();
+                    const precio = parseFloat(card.querySelector(".product-price").textContent.replace("R$", "").trim());
+                    const imagenSrc = card.querySelector("img").src; // Obtener la imagen
+
+                    agregarAlCarrito(nombre, precio, imagenSrc);
+                });
+            });
+
+            function agregarAlCarrito(nombre, precio, imagenSrc) {
+                const filas = carritoTabla.getElementsByTagName("tr");
+
+                for (let fila of filas) {
+                    let nombreProducto = fila.querySelector(".nombre-producto").textContent.trim();
+
+                    if (nombreProducto === nombre) {
+                        // Si el producto ya está en el carrito, aumentar la cantidad
+                        let cantidadElemento = fila.querySelector(".cantidad-producto");
+                        let precioElemento = fila.querySelector(".precio-producto");
+
+                        let cantidad = parseInt(cantidadElemento.textContent) + 1;
+                        cantidadElemento.textContent = cantidad;
+                        precioElemento.textContent = "R$ " + (cantidad * precio).toFixed(2);
+
+                        actualizarTotal();
+                        return;
+                    }
+                }
+
+                // Si el producto NO está en el carrito, agregar una nueva fila
+                const nuevaFila = document.createElement("tr");
+                nuevaFila.innerHTML = `
+            <td><img src="${imagenSrc}" alt="${nombre}" style="width: 40px;"></td>
+            <td class="nombre-producto">${nombre}</td>
+            <td class="cantidad-producto">1</td>
+            <td class="precio-producto">R$ ${precio.toFixed(2)}</td>
+            <td><button class="eliminar-producto">🗑️</button></td>
+        `;
+
+                carritoTabla.appendChild(nuevaFila);
+
+                // Agregar evento al botón de eliminar
+                nuevaFila.querySelector(".eliminar-producto").addEventListener("click", function() {
+                    nuevaFila.remove();
+                    actualizarTotal();
+                });
+
+                actualizarTotal();
+            }
+
+            function actualizarTotal() {
+                let total = 0;
+                const filas = carritoTabla.getElementsByTagName("tr");
+
+                for (let fila of filas) {
+                    let precioTexto = fila.querySelector(".precio-producto").textContent.replace("R$", "").trim();
+                    total += parseFloat(precioTexto);
+                }
+
+                totalElement.textContent = "Total: R$ " + total.toFixed(2);
+            }
+        });
+
+    </script>

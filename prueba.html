@@ -1,16 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divs Centrados</title>
-    <link rel="stylesheet" href="css/outfit.css">
+    <title>Registrar Venta</title>
 </head>
+
 <body>
-    <div class="container">
-        <div class="box">Div 1</div>
-        <div class="box">Div 2</div>
-        <div class="box">Div 3</div>
-    </div>
+    <form action="procesar_venta.php" method="POST">
+        <h3>Productos</h3>
+        <div id="productos">
+            <div class="producto">
+                <label for="producto1">Producto:</label>
+                <select name="productos[]" required>
+                    <option value="1">Producto 1</option>
+                    <option value="2">Producto 2</option>
+                    <option value="3">Producto 3</option>
+                </select>
+                <label for="cantidad1">Cantidad:</label>
+                <input type="number" name="cantidades[]" min="1" required>
+            </div>
+        </div>
+        <br>
+        <button type="button" onclick="agregarProducto()">Agregar otro producto</button>
+        <br><br>
+        <button type="submit">Registrar Venta</button>
+    </form>
+
+    <script>
+        function agregarProducto() {
+            const divProductos = document.getElementById('productos');
+            const nuevoProducto = document.createElement('div');
+            nuevoProducto.classList.add('producto');
+            nuevoProducto.innerHTML = `
+                <label for="producto">Producto:</label>
+                <select name="productos[]" required>
+                    <option value="1">Producto 1</option>
+                    <option value="2">Producto 2</option>
+                    <option value="3">Producto 3</option>
+                </select>
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidades[]" min="1" required>
+            `;
+            divProductos.appendChild(nuevoProducto);
+        }
+
+    </script>
 </body>
+
 </html>

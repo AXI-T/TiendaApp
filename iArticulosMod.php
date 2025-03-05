@@ -33,12 +33,15 @@ if (isset($_GET['id_reg'])) {
     <div class="login-container">
         <div class="login-box">
             <h2 class="forms-titulo"><span> <i class="bi bi-basket2-fill"></i> </span> Articulos</h2>
-            <form class="login-form" method="post">
+            <form class="login-form" method="post" enctype="multipart/form-data">
                 <!--<label for="email">Email</label>-->
+                <div class="contenedor" align="center">
+                    <img id="foto" src="<?= htmlspecialchars($producto['ruta_img']); ?>" alt="Previsualización" style="max-width: 100px; height: 100px;" />
+                </div>
                 <div class="form-row">
                     <div class="input-group">
-                        <label for="imagen-producto"><i class="bi bi-image" style="color: #1199d0;"></i> Imagen del Producto</label>
-                        <input type="file" id="imagen-producto" name="imagen-producto" accept="image/*">
+                        <label for="imagen"><i class="bi bi-image" style="color: #1199d0;"></i> Imagen del Producto</label>
+                        <input type="file" id="imagen" name="imagen" accept="image/*">
                     </div>
                     <!--<div class="input-group">
                         <input type="text" id="nombre" placeholder="&#128273; Nombre" required>
@@ -51,7 +54,7 @@ if (isset($_GET['id_reg'])) {
                 <div class="form-group">
                     <!--<i class="bi bi-universal-access icon" style="color: #43cced;"></i> Icono de usuario -->
                     <i class="bi bi-spellcheck icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
-                    <input type="text" id="name" name="name" value="<?= htmlspecialchars($producto['nombre']); ?>" placeholder="Nombre del Producto"  required>
+                    <input type="text" id="name" name="name" value="<?= htmlspecialchars($producto['nombre']); ?>" placeholder="Nombre del Producto" required>
                 </div>
                 <div class="form-group">
                     <i class="bi bi-upc-scan icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
@@ -59,8 +62,11 @@ if (isset($_GET['id_reg'])) {
                 </div>
                 <div class="form-group">
                     <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
-                    <textarea id="detalle" name="detalle"  placeholder=" Detalle del Producto"></textarea>
-                    <script> document.getElementById('detalle').value = "<?= htmlspecialchars($producto['descripcion']); ?>"; </script>
+                    <textarea id="detalle" name="detalle" placeholder=" Detalle del Producto"></textarea>
+                    <script>
+                        document.getElementById('detalle').value = "<?= htmlspecialchars($producto['descripcion']); ?>";
+
+                    </script>
                 </div>
                 <div class="form-group">
                     <i class="bi bi-tags-fill icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
@@ -98,12 +104,12 @@ if (isset($_GET['id_reg'])) {
                     }
                      ?>
                     <select id="proveedor" name="proveedor">
-                        
+
                         <?php foreach ($proveedores as $proveedor):
                             if($producto['id_proveedor'] === $proveedor['id_proveedor']){ ?>
-                            <option value="<?= $proveedor['id_proveedor'] ?>" selected="<?= $proveedor['id_proveedor'] ?>"> <?= htmlspecialchars($proveedor['nombre']) ?> </option>
+                        <option value="<?= $proveedor['id_proveedor'] ?>" selected="<?= $proveedor['id_proveedor'] ?>"> <?= htmlspecialchars($proveedor['nombre']) ?> </option>
                         <?php }else{ ?>
-                            <option value="<?= $proveedor['id_proveedor'] ?>" > <?= htmlspecialchars($proveedor['nombre']) ?> </option>
+                        <option value="<?= $proveedor['id_proveedor'] ?>"> <?= htmlspecialchars($proveedor['nombre']) ?> </option>
                         <?php } 
                     endforeach; 
                     ?>
@@ -116,6 +122,32 @@ if (isset($_GET['id_reg'])) {
         </div>
     </div>
 </body>
+<script>
+    // Obtener el input file y el elemento de previsualización
+    const inputFile = document.getElementById('imagen');
+    const foto = document.getElementById('foto');
+    // Agregar el evento change al input file
+    inputFile.addEventListener('change', function(event) {
+        const archivo = event.target.files[0]; // Obtener el archivo cargado
+
+        if (archivo) {
+            const lector = new FileReader(); // Crear un FileReader para leer el archivo
+
+            lector.onload = function(e) {
+                // Configurar la imagen de previsualización
+                foto.src = e.target.result;
+                foto.style.display = 'block'; // Mostrar la imagen
+            };
+
+            lector.readAsDataURL(archivo); // Leer el archivo como una URL de datos
+        } else {
+            // Si no hay archivo, ocultar la imagen
+            vistaPrevia.style.display = 'none';
+            vistaPrevia.src = '#';
+        }
+    });
+
+</script>
 
 </html>
 <?php
@@ -130,7 +162,7 @@ if(isset($_POST['Xenviar'])){
         die("Todos los campos son obligatorios.");
     }else{
         try {
-            $query = "UPDATE articulos_tb SET  nombre = :nombre_A, codigo = :code_A, descripcion = :detalle_A, precio = :precio_A, stock = :stock_A, id_proveedor = :provedor_A WHERE id_articulo = :id";
+            $query = "UPDATE articulos_tb SET  nombre = :nombre_A, codigo = :code_A, descripcion = :detalle_A, precio = :precio_A, stock = :stock_A, id_proveedor = :provedor_A, ruta_img = :ruta_img_A WHERE id_articulo = :id";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':nombre_A', $nombre_A, PDO::PARAM_STR);
@@ -139,7 +171,26 @@ if(isset($_POST['Xenviar'])){
             $stmt->bindParam(':precio_A', $precio_A, PDO::PARAM_STR);
             $stmt->bindParam(':stock_A', $stock_A, PDO::PARAM_STR);
             $stmt->bindParam(':provedor_A', $provedor_A, PDO::PARAM_STR);
+            $stmt->bindParam(':ruta_img_A', $rutaDestino, PDO::PARAM_STR);
             $stmt->execute();
+            $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagen'])) {
+                if (in_array($_FILES['imagen']['type'], $tiposPermitidos) != null) {
+                    if (!in_array($_FILES['imagen']['type'], $tiposPermitidos)) {
+                        die("Solo se permiten imágenes (JPEG, PNG, GIF).");  
+                    } 
+                }
+                $extension = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+                $nombreImagen = $code_A . '.' . $extension;
+                $rutaDestino = 'uploads/' . $nombreImagen;
+                // Verificar si ya existe una imagen con ese nombre
+                if (file_exists($rutaDestino)) {
+                    unlink($rutaDestino); // Eliminar la imagen existente
+                }
+                if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
+                    echo "<script> alert('Imagen Compatible'); </script>";
+                }
+            }
             echo "<script>alert('Se Actualizo el Articulo con EXITO'); window.location.href = 'itArticulos.php';</script>";
         } catch (PDOException $e) {
             echo "Error en la Actualizacion de los datos: " . $e->getMessage();
@@ -150,8 +201,3 @@ if(isset($_POST['Xenviar'])){
     }
 }
 ?>
-
-
-
-
-

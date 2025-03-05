@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Articulos</title>
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="stylesheet" href="css/articulos.css">
-    <link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
 </head>
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
-
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/articulos.css">
+<link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
 <body>
     <div class="login-container">
         <div class="login-box">
             <h2 class="forms-titulo"><span> <i class="bi bi-basket2-fill"></i> </span> Articulos</h2>
-            <form class="login-form" method="post">
+            <form id="form1" name="form1" class="login-form" method="post" enctype="multipart/form-data">
+                <div class="contenedor" align="center">
+                    <img id="foto" src="#" alt="Previsualización" style="display: none; max-width: 100px; height: 100px;" />
+                </div>
                 <!--<label for="email">Email</label>-->
                 <div class="form-row">
                     <div class="input-group">
-                        <label for="imagen-producto"><i class="bi bi-image" style="color: #1199d0;"></i> Imagen del Producto</label>
-                        <input type="file" id="imagen-producto" name="imagen-producto" accept="image/*">
+                        <label for="imagen"><i class="bi bi-image" style="color: #1199d0;"></i> Imagen del Producto</label>
+                        <input type="file" id="imagen" name="imagen" accept="image/*">
                     </div>
-                    <!--<div class="input-group">
-                        <input type="text" id="nombre" placeholder="&#128273; Nombre" required>
-                    </div>
-                    <div class="input-group">
-                        <textarea id="detalle" class="objetos-box" placeholder="&#128221; Detalle del Producto"></textarea>
-                    </div> -->
-
                 </div>
                 <div class="form-group">
                     <!--<i class="bi bi-universal-access icon" style="color: #43cced;"></i> Icono de usuario -->
@@ -83,17 +79,44 @@
                     <select id="proveedor" name="proveedor">
                         <option value="0"> Seleccione un Proveedor </option>
                         <?php foreach ($proveedores as $proveedor): ?>
-                            <option value="<?= $proveedor['id_proveedor'] ?>"><?= htmlspecialchars($proveedor['nombre']) ?></option>
+                        <option value="<?= $proveedor['id_proveedor'] ?>"><?= htmlspecialchars($proveedor['nombre']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <!--<label for="password">Password</label>-->
                 <button type="submit" name="Xenviar" class="login-button">Enviar</button>
             </form>
-            <p class="signup-text">Ver <a href="itArticulos.php">Articulos</a></p>
+            <p class="signup-text"><a href="itArticulos.php"> Articulos <i class="bi bi-shop-window"></i></a></p>
         </div>
     </div>
 </body>
+<script>
+    // Obtener el input file y el elemento de previsualización
+    const inputFile = document.getElementById('imagen');
+    const foto = document.getElementById('foto');
+
+    // Agregar el evento change al input file
+    inputFile.addEventListener('change', function(event) {
+        const archivo = event.target.files[0]; // Obtener el archivo cargado
+
+        if (archivo) {
+            const lector = new FileReader(); // Crear un FileReader para leer el archivo
+
+            lector.onload = function(e) {
+                // Configurar la imagen de previsualización
+                foto.src = e.target.result;
+                foto.style.display = 'block'; // Mostrar la imagen
+            };
+
+            lector.readAsDataURL(archivo); // Leer el archivo como una URL de datos
+        } else {
+            // Si no hay archivo, ocultar la imagen
+            vistaPrevia.style.display = 'none';
+            vistaPrevia.src = '#';
+        }
+    });
+
+</script>
 
 </html>
 <?php
@@ -147,7 +170,24 @@ if(isset($_POST['Xenviar'])){
                     } else {
                         define('BxCodigo', 'No existe');
                         if(BxNombre and BxCodigo == 'No existe'){
-                            $sqlIst = "INSERT INTO articulos_tb (nombre, codigo, descripcion, precio, stock, id_proveedor) VALUES (:nombre_A, :code_A, :detalle_A,:precio_A, :stock_A, :provedor_A)";
+                            // Validar la imagen antes de continuar
+                            $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagen'])) {
+                                if (in_array($_FILES['imagen']['type'], $tiposPermitidos) != null) {
+                                    if (!in_array($_FILES['imagen']['type'], $tiposPermitidos)) {
+                                        die("Solo se permiten imágenes (JPEG, PNG, GIF).");
+                                    }
+                                }
+                                
+                                $extension = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+                                $nombreImagen = $code_A . '.' . $extension;
+                                $rutaDestino = 'uploads/' . $nombreImagen;
+                                if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
+                                    echo "<script> alert('Imagen Compatible'); </script>";
+                                }
+
+                            }
+                            $sqlIst = "INSERT INTO articulos_tb (nombre, codigo, descripcion, precio, stock, id_proveedor, ruta_img) VALUES (:nombre_A, :code_A, :detalle_A,:precio_A, :stock_A, :provedor_A, :ruta_img_A)";
                             $stmt = $pdo->prepare($sqlIst);
                             $stmt->bindParam(':nombre_A', $nombre_A, PDO::PARAM_STR);
                             $stmt->bindParam(':code_A', $code_A, PDO::PARAM_STR);
@@ -155,14 +195,17 @@ if(isset($_POST['Xenviar'])){
                             $stmt->bindParam(':precio_A', $precio_A, PDO::PARAM_STR);
                             $stmt->bindParam(':stock_A', $stock_A, PDO::PARAM_STR);
                             $stmt->bindParam(':provedor_A', $provedor_A, PDO::PARAM_STR);
+                            $stmt->bindParam(':ruta_img_A', $rutaDestino, PDO::PARAM_STR);
+                            
                             if ($stmt->execute()) {
-                                echo "Usuario registrado correctamente.";
+                                echo "<script> alert('Usuario registrado correctamente'); </script>";
+                                //location.reload();
                             } else {
-                                echo "Error al registrar el usuario.";
+                                echo "<script> alert('Error al enviar el Registro'); </script>";
                             }
                             
                         }else{
-                            echo 'el articulo ya existe puedes registrar otro articulo';
+                            echo "<script> alert('El articulo ya existe puedes registrar otro articulo'); </script>";
                         }
                     }
                 } catch (PDOException $e) {
@@ -176,8 +219,5 @@ if(isset($_POST['Xenviar'])){
         // Cerrar conexión
         $pdo = null;
     }
-    echo $nombre_A .' : '.$code_A .' : '.$detalle_A .' : '.$precio_A .' : '.$stock_A .' : '.$provedor_A;
-    
-    
 }
 ?>

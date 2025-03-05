@@ -21,6 +21,14 @@ body {
     width: 100%;
 }
 
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .login-box {
     /*width: 300px;
     
