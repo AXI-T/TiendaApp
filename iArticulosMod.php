@@ -1,13 +1,29 @@
 <?php
 include("iCNX.php");
+
 if (isset($_GET['id_reg'])) {
-    $id = intval($_GET['id_reg']); // Asegúrate de sanitizar el dato para evitar inyección SQL
+    $id = intval($_GET['id_reg']); 
     try {
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $query = "SELECT * FROM articulos_tb WHERE id_articulo = :id_reg";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(':id_reg', $id, PDO::PARAM_INT);
         $stmt->execute();
         $producto = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $query1 = "SELECT id_medida, unidad FROM catalogo_medidas";
+        $stmt1 = $pdo->query($query1);
+        $medidas = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+        
+        $query2 = "SELECT id_categoria, nombre FROM categorias_tb";
+        $stmt2 = $pdo->query($query2);
+        $categorias = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        
+        $query3 = "SELECT id_proveedor, nombre FROM proveedor_tb";
+        $stmt3 = $pdo->query($query3);
+        $proveedores = $stmt3->fetchAll(PDO::FETCH_ASSOC);
+        
+        
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
@@ -25,9 +41,11 @@ if (isset($_GET['id_reg'])) {
     <title>Registro de Articulos</title>
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/articulos.css">
+    <link rel="stylesheet" href="css/objetos.css">
     <link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <!-- SweetAlert2 -->
+    <script src="js/sweetA.js"></script>
 </head>
-<!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 
 <body>
     <div class="login-container">
@@ -61,6 +79,19 @@ if (isset($_GET['id_reg'])) {
                     <input type="text" id="codea" name="codea" placeholder="Codigo del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" value="<?= htmlspecialchars($producto['codigo']); ?>" required>
                 </div>
                 <div class="form-group">
+                    <i class="bi bi-bag icon" style="color: #1199d0;"></i>
+                    <select id="medida" name="medida">
+                        <?php foreach ($medidas as $medida):
+                            if($producto['u_medida'] === $medida['unidad']){ ?>
+                        <option value="<?= $medida['unidad'] ?>" selected="<?= $medida['unidad'] ?>"> <?= htmlspecialchars($medida['unidad']) ?> </option>
+                        <?php }else{ ?>
+                        <option value="<?= $medida['unidad'] ?>"> <?= htmlspecialchars($medida['unidad']) ?> </option>
+                        <?php } 
+                    endforeach; 
+                    ?>
+                    </select>
+                </div>
+                <div class="form-group">
                     <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
                     <textarea id="detalle" name="detalle" placeholder=" Detalle del Producto"></textarea>
                     <script>
@@ -72,39 +103,26 @@ if (isset($_GET['id_reg'])) {
                     <i class="bi bi-tags-fill icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
                     <input type="text" id="precio" name="precio" placeholder="Precio del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" value="<?= htmlspecialchars($producto['precio']); ?>" required>
                 </div>
-                <!--<div class="form-row">
-                    <div class="input-group">
-                        <div class="password-container">
-                            <input type="text" id="precio" placeholder="&#129689; &#36; Precio del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="cantidad" placeholder="&#127857; Existencias del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>
-                    </div>
-                </div>-->
+                <div class="form-group">
+                    <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i>
+                    <select id="categoria" name="categoria">
+                        <?php foreach ($categorias as $categoria):
+                            if($producto['id_categoria'] === $categoria['id_categoria']){ ?>
+                        <option value="<?= $categoria['id_categoria'] ?>" selected="<?= $categoria['id_categoria'] ?>"> <?= htmlspecialchars($categoria['nombre']) ?> </option>
+                        <?php }else{ ?>
+                        <option value="<?= $categoria['id_categoria'] ?>"> <?= htmlspecialchars($categoria['nombre']) ?> </option>
+                        <?php } 
+                    endforeach; 
+                    ?>
+                    </select>
+                </div>
                 <div class="form-group">
                     <i class="bi bi-box-seam-fill icon" style="color: #d58938;"></i> <!-- Icono de usuario -->
                     <input type="text" id="stock" name="stock" placeholder="Existencias del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" value="<?= htmlspecialchars($producto['stock']); ?>" required>
                 </div>
                 <div class="form-group">
                     <i class="bi bi-bus-front-fill icon" style="color: #1199d0;"></i>
-                    <!-- Icono de usuario 
-                    <input type="text" id="phone" placeholder="Telefono" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>-->
-                    <?php
-                    try {
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        // Consulta para obtener los proveedores
-                        $query = "SELECT id_proveedor, nombre FROM proveedor_tb";
-                        $stmt = $pdo->query($query);
-                        // Guardar los resultados en un array
-                        $proveedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    } catch (PDOException $e) {
-                        echo "Error en la conexión: " . $e->getMessage();
-                        exit;
-                    }
-                     ?>
                     <select id="proveedor" name="proveedor">
-
                         <?php foreach ($proveedores as $proveedor):
                             if($producto['id_proveedor'] === $proveedor['id_proveedor']){ ?>
                         <option value="<?= $proveedor['id_proveedor'] ?>" selected="<?= $proveedor['id_proveedor'] ?>"> <?= htmlspecialchars($proveedor['nombre']) ?> </option>
@@ -154,25 +172,16 @@ if (isset($_GET['id_reg'])) {
 if(isset($_POST['Xenviar'])){
     $nombre_A = trim($_POST['name']);
     $code_A = trim($_POST['codea']);
+    $medida = trim($_POST['medida']);
     $detalle_A = trim($_POST['detalle']);
     $precio_A = trim($_POST['precio']);
+    $categoria_A = trim($_POST['categoria']);
     $stock_A = trim($_POST['stock']);
     $provedor_A = trim($_POST['proveedor']);
-    if (empty($nombre_A) || empty($code_A) || empty($detalle_A) || empty($precio_A) || empty($stock_A) || $provedor_A ==  0) {
+    if (empty($nombre_A) || empty($code_A) || empty($medida) || empty($detalle_A) || empty($precio_A) || $categoria_A ==0 || empty($stock_A) || $provedor_A ==  0) {
         die("Todos los campos son obligatorios.");
     }else{
         try {
-            $query = "UPDATE articulos_tb SET  nombre = :nombre_A, codigo = :code_A, descripcion = :detalle_A, precio = :precio_A, stock = :stock_A, id_proveedor = :provedor_A, ruta_img = :ruta_img_A WHERE id_articulo = :id";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':nombre_A', $nombre_A, PDO::PARAM_STR);
-            $stmt->bindParam(':code_A', $code_A, PDO::PARAM_STR);
-            $stmt->bindParam(':detalle_A', $detalle_A, PDO::PARAM_STR);
-            $stmt->bindParam(':precio_A', $precio_A, PDO::PARAM_STR);
-            $stmt->bindParam(':stock_A', $stock_A, PDO::PARAM_STR);
-            $stmt->bindParam(':provedor_A', $provedor_A, PDO::PARAM_STR);
-            $stmt->bindParam(':ruta_img_A', $rutaDestino, PDO::PARAM_STR);
-            $stmt->execute();
             $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif'];
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['imagen'])) {
                 if (in_array($_FILES['imagen']['type'], $tiposPermitidos) != null) {
@@ -191,8 +200,22 @@ if(isset($_POST['Xenviar'])){
                     echo "<script> alert('Imagen Compatible'); </script>";
                 }
             }
-            echo "<script>alert('Se Actualizo el Articulo con EXITO'); window.location.href = 'itArticulos.php';</script>";
+            $query = "UPDATE articulos_tb SET  nombre = :nombre_A, codigo = :code_A, u_medida = :medida, descripcion = :detalle_A, id_categoria = :categoria_A, precio = :precio_A, stock = :stock_A, id_proveedor = :provedor_A, ruta_img = :ruta_img_A WHERE id_articulo = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':nombre_A', $nombre_A, PDO::PARAM_STR);
+            $stmt->bindParam(':code_A', $code_A, PDO::PARAM_STR);
+            $stmt->bindParam(':medida', $medida, PDO::PARAM_STR);
+            $stmt->bindParam(':detalle_A', $detalle_A, PDO::PARAM_STR);
+            $stmt->bindParam(':categoria_A', $categoria_A, PDO::PARAM_STR);
+            $stmt->bindParam(':precio_A', $precio_A, PDO::PARAM_STR);
+            $stmt->bindParam(':stock_A', $stock_A, PDO::PARAM_STR);
+            $stmt->bindParam(':provedor_A', $provedor_A, PDO::PARAM_STR);
+            $stmt->bindParam(':ruta_img_A', $rutaDestino, PDO::PARAM_STR);
+            $stmt->execute();
+            echo "<script> Swal.fire({title: 'Se Actualizo con EXITO!',icon: 'success', draggable: true}); window.location.href = 'itArticulos.php'; </script>";
         } catch (PDOException $e) {
+            echo "<script> Swal.fire({title: 'Error! datos no Actualizados',icon: 'error', draggable: true}); </script>";
             echo "Error en la Actualizacion de los datos: " . $e->getMessage();
         }
     

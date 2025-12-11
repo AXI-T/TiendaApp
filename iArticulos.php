@@ -6,13 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Articulos</title>
 </head>
+<?php
+                    
+    include("iCNX.php");
+    try {
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Consulta para obtener los proveedores
+        $query = "SELECT id_proveedor, nombre FROM proveedor_tb";
+        $stmt = $pdo->query($query);
+        $query1 = "SELECT *FROM categorias_tb";
+        $stmt1 = $pdo->query($query1);
+        $query2 = "SELECT *FROM catalogo_medidas";
+        $stmt2 = $pdo->query($query2);
+        // Guardar los resultados en un array 
+        $proveedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $categorias = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+        $medidas = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Error en la conexión: " . $e->getMessage();
+        exit;
+    }
+                     
+?>
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 <link rel="stylesheet" href="css/login.css">
 <link rel="stylesheet" href="css/articulos.css">
+<link rel="stylesheet" href="css/objetos.css">
 <link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+<!-- SweetAlert2 -->
+<script src="js/sweetA.js"></script>
+
 <body>
     <div class="login-container">
-        <div class="login-box">
+        <div class="login-box" style="width: 500px;">
             <h2 class="forms-titulo"><span> <i class="bi bi-basket2-fill"></i> </span> Articulos</h2>
             <form id="form1" name="form1" class="login-form" method="post" enctype="multipart/form-data">
                 <div class="contenedor" align="center">
@@ -35,12 +61,31 @@
                     <input type="text" id="codea" name="codea" placeholder="Codigo del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>
                 </div>
                 <div class="form-group">
-                    <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
+                    <i class="bi bi-bag icon" style="color: #1199d0;"></i>
+                    <select id="medida" name="medida">
+                        <option value="0"> medida del Articulo </option>
+                        <?php foreach ($medidas as $medidas): ?>
+                        <option value="<?= $medidas['unidad'] ?>"><?= htmlspecialchars($medidas['unidad']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <i class="bi bi-info-circle-fill icon" style="color: #1199d0;"></i>
                     <textarea id="detalle" name="detalle" placeholder=" Detalle del Producto"></textarea>
                 </div>
                 <div class="form-group">
                     <i class="bi bi-tags-fill icon" style="color: #1199d0;"></i> <!-- Icono de usuario -->
                     <input type="text" id="precio" name="precio" placeholder="Precio del Producto" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>
+                </div>
+                <div class="form-group row">
+                    <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i>
+                    <i class="bi bi-ticket-detailed icon" style="color: #1199d0;"></i>
+                    <select id="categoria" name="categoria">
+                        <option value="0"> Categoria del Articulo </option>
+                        <?php foreach ($categorias as $categoria): ?>
+                        <option value="<?= $categoria['id_categoria'] ?>"><?= htmlspecialchars($categoria['nombre']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <!--<div class="form-row">
                     <div class="input-group">
@@ -60,22 +105,6 @@
                     <i class="bi bi-bus-front-fill icon" style="color: #1199d0;"></i>
                     <!-- Icono de usuario 
                     <input type="text" id="phone" placeholder="Telefono" oninput="this.value = this.value.replace(/[^0-9]/,'')" required>-->
-                    <?php
-                    include("iCNX.php");
-                    try {
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        // Consulta para obtener los proveedores
-                        $query = "SELECT id_proveedor, nombre FROM proveedor_tb";
-                        $stmt = $pdo->query($query);
-                    
-                        // Guardar los resultados en un array
-                        $proveedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    } catch (PDOException $e) {
-                        echo "Error en la conexión: " . $e->getMessage();
-                        exit;
-                    }
-                     ?>
                     <select id="proveedor" name="proveedor">
                         <option value="0"> Seleccione un Proveedor </option>
                         <?php foreach ($proveedores as $proveedor): ?>
@@ -86,7 +115,7 @@
                 <!--<label for="password">Password</label>-->
                 <button type="submit" name="Xenviar" class="login-button">Enviar</button>
             </form>
-            <p class="signup-text"><a href="itArticulos.php"> Articulos <i class="bi bi-shop-window"></i></a></p>
+            <p class="signup-text"><a href="itArticulos.php" style="font-size: 22px;"> Articulos <i class="bi bi-shop-window"></i></a></p>
         </div>
     </div>
 </body>
@@ -124,11 +153,13 @@
 if(isset($_POST['Xenviar'])){
     $nombre_A = trim($_POST['name']);
     $code_A = trim($_POST['codea']);
+    $medida = trim($_POST['medida']);
     $detalle_A = trim($_POST['detalle']);
     $precio_A = trim($_POST['precio']);
+    $categoria_A = trim($_POST['categoria']);
     $stock_A = trim($_POST['stock']);
     $provedor_A = trim($_POST['proveedor']);
-    if (empty($nombre_A) || empty($code_A) || empty($detalle_A) || empty($precio_A) || empty($stock_A) || $provedor_A ==  0) {
+    if (empty($nombre_A) || empty($code_A) || empty($medida) || empty($detalle_A) || empty($precio_A) || $categoria_A ==0 || empty($stock_A) || $provedor_A ==  0) {
         die("Todos los campos son obligatorios.");
     }else{
         try {
@@ -178,34 +209,34 @@ if(isset($_POST['Xenviar'])){
                                         die("Solo se permiten imágenes (JPEG, PNG, GIF).");
                                     }
                                 }
-                                
-                                $extension = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
-                                $nombreImagen = $code_A . '.' . $extension;
-                                $rutaDestino = 'uploads/' . $nombreImagen;
-                                if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
-                                    echo "<script> alert('Imagen Compatible'); </script>";
-                                }
-
                             }
-                            $sqlIst = "INSERT INTO articulos_tb (nombre, codigo, descripcion, precio, stock, id_proveedor, ruta_img) VALUES (:nombre_A, :code_A, :detalle_A,:precio_A, :stock_A, :provedor_A, :ruta_img_A)";
+                            $extension = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+                            $nombreImagen = $code_A . '.' . $extension;
+                            $rutaDestino = 'uploads/' . $nombreImagen;
+                            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
+                                echo "<script> alert('Imagen Compatible'); </script>";
+                            }
+                            $sqlIst = "INSERT INTO articulos_tb (nombre, codigo, u_medida, descripcion, id_categoria, precio, stock, id_proveedor, ruta_img, fecha_reg) VALUES (:nombre_A, :code_A, :medida, :detalle_A, :categoria_A, :precio_A, :stock_A, :provedor_A, :ruta_img_A, CURDATE())";
                             $stmt = $pdo->prepare($sqlIst);
                             $stmt->bindParam(':nombre_A', $nombre_A, PDO::PARAM_STR);
                             $stmt->bindParam(':code_A', $code_A, PDO::PARAM_STR);
+                            $stmt->bindParam(':medida', $medida, PDO::PARAM_STR);
                             $stmt->bindParam(':detalle_A', $detalle_A, PDO::PARAM_STR);
+                            $stmt->bindParam(':categoria_A', $categoria_A, PDO::PARAM_STR);
                             $stmt->bindParam(':precio_A', $precio_A, PDO::PARAM_STR);
                             $stmt->bindParam(':stock_A', $stock_A, PDO::PARAM_STR);
                             $stmt->bindParam(':provedor_A', $provedor_A, PDO::PARAM_STR);
                             $stmt->bindParam(':ruta_img_A', $rutaDestino, PDO::PARAM_STR);
-                            
                             if ($stmt->execute()) {
-                                echo "<script> alert('Usuario registrado correctamente'); </script>";
+                                echo "<script> Swal.fire({title: 'Nuevo Articulo Disponible!',icon: 'success', draggable: true}); </script>";
                                 //location.reload();
                             } else {
-                                echo "<script> alert('Error al enviar el Registro'); </script>";
+                                //echo "<script> alert(''); </script>";
+                                echo "<script> Swal.fire({title: 'Error al enviar el Registro!',icon: 'error', draggable: true}); </script>";
                             }
                             
                         }else{
-                            echo "<script> alert('El articulo ya existe puedes registrar otro articulo'); </script>";
+                            echo "<script> Swal.fire({title: 'Intentas registrar un Articulo Existente...',icon: 'warning', draggable: true}); </script>";
                         }
                     }
                 } catch (PDOException $e) {

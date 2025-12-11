@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/articulos.css">
     <link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
+    <!-- SweetAlert2 -->
+    <script src="js/sweetA.js"></script>
 </head>
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 
@@ -72,7 +74,7 @@ if(isset($_POST['Xenviar'])){
             
             // Validar la existencia del registro
             if ($row['total'] > 0) {
-                echo "<script> alert('Proveedor existente puedes continuar!'); </script>";
+                echo "<script> Swal.fire({title: 'Intentas registrar un Proveedor Existente...',icon: 'warning', draggable: true}); </script>";
             } else {
                 $sqlIst = "INSERT INTO proveedor_tb (nombre, contacto, telefono, direccion) VALUES (:nombre_pv, :contacto_pv, :telefono_pv,:direccion_pv)";
                 $stmt = $pdo->prepare($sqlIst);
@@ -81,10 +83,10 @@ if(isset($_POST['Xenviar'])){
                 $stmt->bindParam(':telefono_pv', $telefono_pv, PDO::PARAM_INT);
                 $stmt->bindParam(':direccion_pv', $direccion_pv, PDO::PARAM_STR);
                 if ($stmt->execute()) {
-                    echo "<script> alert('Registrado correctamente'); </script>";
+                    echo "<script> Swal.fire({title: 'Registro Exitoso!',icon: 'success', draggable: true}); </script>";
                     //location.reload();
                 } else {
-                    echo "<script> alert('Error al enviar el Registro'); </script>";
+                    echo "<script> Swal.fire({title: 'Error al enviar el Registro!',icon: 'error', draggable: true}); </script>";
                 }
             }
         } catch (PDOException $e) {
