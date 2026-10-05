@@ -26,6 +26,7 @@
 ?>
 
 <body>
+    <?php include_once("navegacion.php"); ?>
     <div class="login-container">
         <div class="login-box" style="width: 500px;">
             <h2 class="forms-titulo">Registro Personal</h2>
@@ -134,8 +135,6 @@ if(isset($_POST['Xenviar'])){
     $c_clave = trim($_POST['confirm-password']);
     $telefono = trim($_POST['telefono']);
     $salario = trim($_POST['salario']);
-    echo "<script>alert('si hasta aqui');</script>";
-    echo $rol. $nombre. $usuario. $correo. $clave. $c_clave. $telefono. $salario;
     if ($rol==null || $rol == 0){
         echo "<script> Swal.fire({title: 'Elige un Rol!', icon: 'error', draggable: true}); </script>";
     }else{
@@ -171,7 +170,8 @@ if(isset($_POST['Xenviar'])){
                         }
                     }
                 } catch (PDOException $e) {
-                    echo "Error en la consulta: " . $e->getMessage();
+                    
+                    echo "<script> Swal.fire({title: 'Error en la consulta: . $e->getMessage()',icon: 'error', draggable: true}); </script>" ;
                 }
                 $pdo = null;
             }else{

@@ -20,8 +20,10 @@ try {
                 <div class="product-card">
                     <div class="product-image"><img src="'.htmlspecialchars($producto['ruta_img']).'" alt="Imagen Producto" style="max-width: 50px;"></div>
                     <div class="product-info">
+                        <p class="oculto" style="display : none;">'.htmlspecialchars($producto['codigo']).'</p>
                         <p class="product-name">'.htmlspecialchars($producto['nombre']).'</p>
                         <p class="product-price">$ '.htmlspecialchars($producto['precio']).'</p>
+                        <p class="product-unit">'.htmlspecialchars($producto['u_medida']).'</p>
                         <button class="add-button">+</button>
                     </div>
                 </div>';

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Titulo</title>
+    <meta name="" content="">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <label for="miInputJS">Solo números y *:</label>
+    <input type="text" id="miInputJS" onkeypress="return soloNumerosYAsterisco(event);" />
+
+    <script>
+        function soloNumerosYAsterisco(event) {
+            const charCode = (event.which) ? event.which : event.keyCode;
+            // Códigos ASCII: 48-57 para 0-9, 42 para *
+            if ((charCode >= 48 && charCode <= 57) || charCode === 42 || charCode === 8 || charCode === 0 || charCode === 46) { // 8 es Backspace
+                return true;
+            }
+            return false;
+        }
+
+    </script>
+    <script>
+        document.getElementById('formValidacion').addEventListener('submit', function(event) {
+            // 1. Previene el envío normal del formulario (la recarga de página)
+            event.preventDefault();
+
+            const inputElement = document.getElementById('mi_input');
+            const respuestaElement = document.getElementById('respuestaServidor');
+            const valorInput = inputElement.value;
+
+            // Opcional: Validación JS inicial (buena práctica)
+            if (!/^[0-9*]+$/.test(valorInput)) {
+                respuestaElement.textContent = "Error (JS): Solo se permiten números y *";
+                respuestaElement.style.color = "orange";
+                return;
+            }
+
+            // 2. Envía los datos al servidor usando fetch (AJAX)
+            fetch('validar.php', {
+                    method: 'POST',
+                    headers: {
+                        // Le decimos a PHP que le enviamos datos de formulario
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    // Codificamos el dato clave=valor como si fuera un formulario normal
+                    body: 'mi_input=' + encodeURIComponent(valorInput)
+                })
+                .then(response => response.text()) // Esperamos una respuesta de texto plano
+                .then(data => {
+                    // 3. Manejamos la respuesta del servidor
+                    if (data.includes('Dato válido')) {
+                        respuestaElement.textContent = data;
+                        respuestaElement.style.color = "green";
+                    } else {
+                        respuestaElement.textContent = data;
+                        respuestaElement.style.color = "red";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la petición:', error);
+                    respuestaElement.textContent = 'Hubo un error de conexión.';
+                    respuestaElement.style.color = "red";
+                });
+        });
+
+    </script>
+</body>
+
+</html>
+<?php
+$input = $_POST['mi_input'];
+$input = trim($_POST['mi_input'] ?? ''); // El ?? '' evita errores si el campo viene vacío
+// El patrón /^[0-9*]+$/ significa: desde el inicio (^) hasta el fin ($), solo 0-9 o *
+if (preg_match('/^[0-9*]+$/', $input)) {
+    echo "Dato válido";
+} else {
+    echo "Error: Solo se permiten números y asteriscos";
+}
+?>
+bueno
+<?php
+// Recibimos y limpiamos espacios
+$input = trim($_POST['mi_input'] ?? '');
+
+// Regex mejorada: Solo números y *, de 1 a 20 caracteres
+if (preg_match('/^[0-9*]{1,20}$/', $input)) {
+    echo "Dato válido: " . htmlspecialchars($input);
+} else {
+    echo "Error: Entrada no permitida o demasiado larga";
+}
+?>
+//// con limite de caracteres
+<?php
+// Configura la cabecera para evitar problemas de CORS si es necesario
+header('Content-Type: text/plain; charset=utf-8');
+
+// Recibimos y limpiamos espacios
+$input = trim($_POST['mi_input'] ?? '');
+
+// Regex mejorada: Solo números y *, de 1 a 20 caracteres
+if (preg_match('/^[0-9*]{1,20}$/', $input)) {
+    // Usa htmlspecialchars por si acaso
+    echo "Dato válido: " . htmlspecialchars($input);
+} else {
+    // Si falla, el mensaje de error es la respuesta
+    echo "Error: Entrada no permitida o demasiado larga";
+}
+?>

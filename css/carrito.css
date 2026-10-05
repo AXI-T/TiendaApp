@@ -64,7 +64,7 @@
 
 .edit-button {
     background-color: white;
-    color: #8a2be2;
+    color: #E6A900;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     border: none;
     border-radius: 5px;
@@ -75,15 +75,33 @@
 }
 
 .edit-button:hover {
-    background-color: #8a2be2;
+    background-color: #E6A900;
+    color: white;
+}
+
+.abono-button {
+    background-color: white;
+    color: #184403;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.abono-button:hover {
+    background-color: #68F527;
     color: white;
 }
 
 /* este estilo es para las acciones dentro de la tabla*/
 .actions {
-    display: flex;
+    display: table-cell;
     gap: 10px;
     align-items: center;
+
 }
 
 .actions button {

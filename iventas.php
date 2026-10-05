@@ -70,9 +70,12 @@ try{
 
 <body>
     <!-- Inclusión del archivo de navegación -->
-    <iframe src="nav.html" style="border:none; width: 100%;"></iframe>
+    <?php include_once("navegacion.php"); ?>
+    <!--
+    <iframe src="navegacion.php" style="border:none; width: 100%;"></iframe>
+    -->
 
-    <div class="container">
+    <div class="container" style="max-width:100%">
         <div class="left-content">
             <!-- Sección de búsqueda y filtro -->
             <div class="search-filter">
@@ -92,7 +95,7 @@ try{
                     <?php endforeach; ?>
                 </select>
                 <select id="clients" name="clients">
-                    <option value="0"> Seleccione un Cliente </option>
+                    <!--<option value="0"> Seleccione un Cliente </option>-->
                     <?php foreach ($clientes as $cliente): ?>
                     <option value="<?= $cliente['id_cliente'] ?>"><?= htmlspecialchars($cliente['nombre']) ?></option>
                     <?php endforeach; ?>
@@ -174,6 +177,17 @@ try{
     <script src="js/jquery.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Base de datos de productos desde PHP
+            const productosDB = <?php echo json_encode(array_column($productos, null, 'id_articulo')); ?>;
+
+            // Delegación de eventos para el input de búsqueda rápida
+
+            document.getElementById('entrada-rapida')?.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    procesarEntradaRapida(this.value.trim());
+                    this.value = '';
+                }
+            });
             // Delegación de eventos para los botones de "Agregar"
             document.querySelector(".product-container").addEventListener("click", function(event) {
                 if (event.target.classList.contains("add-button")) {

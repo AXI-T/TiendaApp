@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Articulos</title>
-</head>
 <?php
                     
-    include("iCNX.php");
+    include_once("iCNX.php");
     try {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         // Consulta para obtener los proveedores
@@ -26,17 +20,26 @@
         echo "Error en la conexión: " . $e->getMessage();
         exit;
     }
-                     
+    
 ?>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 <link rel="stylesheet" href="css/login.css">
 <link rel="stylesheet" href="css/articulos.css">
-<link rel="stylesheet" href="css/objetos.css">
 <link rel="stylesheet" href="css/icon/bootstrap-icons-1.11.3/font/bootstrap-icons.min.css">
 <!-- SweetAlert2 -->
 <script src="js/sweetA.js"></script>
 
+
+<head>
+    <title>Registro de Articulos</title>
+</head>
+
+
 <body>
+
+    <?php include_once("navegacion.php"); ?>
     <div class="login-container">
         <div class="login-box" style="width: 500px;">
             <h2 class="forms-titulo"><span> <i class="bi bi-basket2-fill"></i> </span> Articulos</h2>
@@ -115,7 +118,7 @@
                 <!--<label for="password">Password</label>-->
                 <button type="submit" name="Xenviar" class="login-button">Enviar</button>
             </form>
-            <p class="signup-text"><a href="itArticulos.php" style="font-size: 22px;"> Articulos <i class="bi bi-shop-window"></i></a></p>
+            <p class="signup-text"><a href="itArticulos.php" style="font-size: 16px;"><i class="bi bi-boxes"></i> Ver Articulos</a></p>
         </div>
     </div>
 </body>

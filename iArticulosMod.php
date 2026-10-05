@@ -48,6 +48,7 @@ if (isset($_GET['id_reg'])) {
 </head>
 
 <body>
+    <?php include_once("navegacion.php"); ?>
     <div class="login-container">
         <div class="login-box">
             <h2 class="forms-titulo"><span> <i class="bi bi-basket2-fill"></i> </span> Articulos</h2>

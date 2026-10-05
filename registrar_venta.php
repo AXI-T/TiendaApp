@@ -34,7 +34,9 @@ try {
         $cambio = $PagoRecibido - $montoPagar;
         
         $pdo->beginTransaction();
-
+        if ($clienteID == 0 or $ventaID == 1){
+            $clienteID = 1;
+        }
         // Insertar venta principal
         $sqlVenta = "INSERT INTO venta_tb (id_cliente, id_usuario, id_pago, id_d_pago, fecha_v, hora_v, totalventa, cantidadpago, cambio) 
                      VALUES (:cliente_id, :user_id, :tipo_venta_id, :forma_pago_id, CURDATE(), CURTIME(), :monto_pagar, :pagorecibido, :cambio)";

@@ -15,7 +15,8 @@
     <script src="js/jquery.min.js"></script>
     <script src="bootstrap4j/js/jquery.dataTables.min.js"></script>
     <script src="bootstrap4j/js/dataTables.bootstrap.min.js"></script>
-
+    <!-- SweetAlert2 -->
+    <script src="js/sweetA.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap4.min.css">
     <!-- buttons -->
     <script src="bootstrap4j/buttons/dataTables.buttons.min.js"></script>
@@ -23,7 +24,7 @@
     <script src="bootstrap4j/buttons/pdfmake.min.js"></script>
     <script src="bootstrap4j/buttons/vfs_fonts.js"></script>
     <script src="bootstrap4j/buttons/buttons.html5.min.js"></script>
-    <title>Tabla de Artículos</title>
+    <title>Tabla de Clientes</title>
 </head>
 <style>
     /* Estilos adicionales para mejor responsividad */
@@ -67,14 +68,16 @@
 <body>
     <?php
     include("iCNX.php");
-    $sqlB1 = "SELECT a.*, p.nombre as nombreP FROM articulos_tb a INNER JOIN proveedor_tb p ON a.id_proveedor = p.id_proveedor";
+    $sqlB1 = "SELECT c.id_cliente AS id_c, CONCAT(nombre, ' ', apellido_1, ' ', apellido_2) AS Nombre_Cliente, curp, alias, telefono, cc.c_autorizado AS Limite_credito, cc.c_disponible AS credito_disponible, est.descripcion AS estado_cliente, cc.fecha_inicio AS fecha_i, cc.fecha_corte AS fecha_corte FROM cliente_tb c INNER JOIN credito_cliente cc ON c.id_cliente = cc.id_cliente LEFT JOIN catalogo_estatus est ON c.id_estatus = est.id_estatus";
     $stmt = $pdo->prepare($sqlB1);
     $stmt->execute();
+    /*
     $sqlB5 = "SELECT * FROM categorias_tb";
     $stmt5 = $pdo->prepare($sqlB5);
     $stmt5->execute();
     $Categorias = $stmt5->fetchAll(PDO::FETCH_ASSOC);
-    $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    */
+    $lista_clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     ?>
     <?php include_once("navegacion.php"); ?>
@@ -83,7 +86,7 @@
             <tbody>
                 <tr>
                     <td>
-                        <p style="font-size:16px; font-weight: bold;"><a href="iArticulos.php" class="login-button-back"> <i class="bi bi-box2-heart"></i> Agregar Articulos </a> </p>
+                        <p style="font-size:16px; font-weight: bold;"><a href="iclientes.php" class="login-button-back"> <i class="bi bi-person-hearts"></i> Agregar Cliente </a> </p>
                     </td>
                 </tr>
             </tbody>
@@ -92,33 +95,37 @@
             <table class="table table-hover" id="tablaDinamica" style="overflow-x:scroll;">
                 <thead class="cart-table thead table-light" style="color: #8a2be2;">
                     <tr>
-                        <th>Imagen del Producto</th>
-                        <th>Nombre del Producto</th>
-                        <th>Código del Producto</th>
-                        <th>Detalle del Producto</th>
-                        <th>Precio del Producto</th>
-                        <th>Existencias del Producto</th>
-                        <th>Proveedor</th>
+                        <th>Nombre del cliente</th>
+                        <th>CURP Cliente</th>
+                        <th>Telefono</th>
+                        <th>Limite Credito</th><!-- esto es de credito cliente -->
+                        <th>Disponible</th><!-- esto es de credito cliente -->
+                        <th>Estado</th>
+                        <th>Fecha inicio</th><!-- esto es de credito cliente -->
+                        <th>Fecha corte</th><!-- esto es de credito cliente -->
+                        <th>Abonar</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tabla_articulos">
-                    <?php if (!empty($productos)): ?>
-                    <?php foreach ($productos as $producto): ?>
+                    <?php if (!empty($lista_clientes)): ?>
+                    <?php foreach ($lista_clientes as $cliente): ?>
                     <tr>
-                        <td><img src="<?= htmlspecialchars($producto['ruta_img']); ?>" alt="Imagen Producto" style="max-width: 50px; height: auto;" class="img-thumbnail"></td>
-                        <td><?= htmlspecialchars($producto['nombre']); ?></td>
-                        <td><?= htmlspecialchars($producto['codigo']); ?></td>
-                        <td><?= htmlspecialchars($producto['descripcion']); ?></td>
-                        <td>$<?= htmlspecialchars($producto['precio']); ?></td>
-                        <td><?= htmlspecialchars($producto['stock']); ?></td>
-                        <td><?= htmlspecialchars($producto['nombreP']); ?></td>
-                        <td class="actions" style="display: grid; place-items: center;"><button class="delete-button" onclick="eliminarProducto('<?= htmlspecialchars($producto['id_articulo']); ?>');"><i class="bi bi-trash3"></i></button><button class="edit-button" onclick="editarProducto('<?= htmlspecialchars($producto['id_articulo']); ?>');"><i class="bi bi-pencil"></i></button></td>
+                        <td><?= htmlspecialchars($cliente['Nombre_Cliente']); ?></td>
+                        <td><?= htmlspecialchars($cliente['curp']); ?></td>
+                        <td><?= htmlspecialchars($cliente['telefono']); ?></td>
+                        <td>$<?= htmlspecialchars($cliente['Limite_credito']); ?></td>
+                        <td>$<?= htmlspecialchars($cliente['credito_disponible']); ?></td>
+                        <td><?= htmlspecialchars($cliente['estado_cliente']); ?></td>
+                        <td><?= htmlspecialchars($cliente['fecha_i']); ?></td>
+                        <td><?= htmlspecialchars($cliente['fecha_corte']); ?></td>
+                        <td class="actions" style="display: grid; align-content: center;"><button class="abono-button" onclick="abonoCliente('<?= htmlspecialchars($cliente['id_c']); ?>');"><i class="bi bi-cash-coin"></i></button></td>
+                        <td class="actions"><button class="delete-button" onclick="eliminarCliente('<?= htmlspecialchars($cliente['id_c']); ?>');"><i class="bi bi-trash3"></i></button><button class="edit-button" onclick="editarCliente('<?= htmlspecialchars($cliente['id_c']); ?>');"><i class="bi bi-pencil"></i></button></td>
                     </tr>
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                        <td colspan="8">No hay productos disponibles</td>
+                        <td colspan="8">No hay Clientes para Mostrar</td>
                     </tr>
                     <?php endif; ?>
                 </tbody>
@@ -126,7 +133,7 @@
         </div>
     </div>
     <!-- ****************************-->
-
+    <button onclick="abreSweet()">probamos1</button>
     <script>
         $(document).ready(function() {
             $('#tablaDinamica').DataTable({
@@ -150,45 +157,60 @@
                 buttons: [{
                         extend: 'excelHtml5',
                         text: '<i class="bi bi-file-earmark-excel"></i> Excel',
-                        title: 'Listado de Articulos',
+                        title: 'Lista de Clientes',
                         className: 'btn btn-success',
                         exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6]
+                            columns: [0, 1, 3, 4, 5, 6, 7, 8]
                         }
                     },
                     {
                         extend: 'pdfHtml5',
                         text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
-                        title: 'Listado de Articulos',
+                        title: 'Lista de Clientes',
                         className: 'btn btn-danger',
                         exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6]
+                            columns: [0, 1, 3, 4, 5, 6, 7, 8]
                         }
                     }
                 ],
                 responsive: true,
-                pageLength: 10
+                pageLength: 5
             });
         });
 
-        function eliminarProducto(id) {
-            if (confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-                $.post("eliminarArt.php", {
+        function abonoCliente(id) {
+            window.location.href = "iabono_cliente.php?id_reg=" + id;
+        }
+
+        function eliminarCliente(id) {
+            if (confirm("¿Estás seguro de que quieres eliminar el cliente?")) {
+                $.post("eliminarCliente.php", {
                     id: id
                 }, function(response) {
                     const data = JSON.parse(response);
                     if (data.success) {
-                        alert("Producto eliminado correctamente.");
+                        alert("Cliente eliminado correctamente.");
                         location.reload();
                     } else {
-                        alert("Error al eliminar el producto.");
+                        alert("Error al eliminar Cliente.");
                     }
                 });
             }
         }
 
-        function editarProducto(id) {
-            window.location.href = "iArticulosMod.php?id_reg=" + id;
+        function editarCliente(id) {
+            window.location.href = "iclienteMod.php?id_reg=" + id;
+        }
+
+    </script>
+    <script>
+        function abreSweet() {
+            Swal.fire({
+                with: "100%",
+                html: '<iframe src="iclienteMod.php" style="border:none; width: 100%;"></iframe>'
+
+            });
+
         }
 
     </script>

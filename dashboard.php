@@ -281,8 +281,13 @@
                     <a href="iventas.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-shopping-cart me-2"></i>Ventas
                     </a>
+                    <a href="iProveedor.php" class="list-group-item list-group-item-action">
+                        <i class="fas fa-truck me-2"></i>Proveedores
+                    </a>
                     <a href="iArticulos.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-boxes me-2"></i>Productos
+                    </a><a href="ipersonal.php" class="list-group-item list-group-item-action">
+                        <i class="fas fa-id-card-alt me-2"></i>Personal
                     </a>
                     <a href="iclientes.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-users me-2"></i>Clientes

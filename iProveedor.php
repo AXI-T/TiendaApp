@@ -14,6 +14,7 @@
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 
 <body>
+    <?php include_once("navegacion.php"); ?>
     <div class="login-container">
         <div class="login-box">
             <h2 class="forms-titulo"><span> <i class="bi bi-bus-front-fill"></i> </span> Proveedores</h2>
@@ -44,8 +45,8 @@
                 </div>
                 <!--<label for="password">Password</label>-->
                 <button type="submit" name="Xenviar" id="Xenviar" class="login-button">Enviar</button>
-                <p class="signup-text">Ver <a href="iProveedorMod.php">Articulos</a></p>
             </form>
+            <p class="signup-text"><a href="itProveedores.php" style="font-size: 16px;"><i class="bi bi-bus-front-fill"></i> Ver Proveedores</a></p>
         </div>
     </div>
 </body>
@@ -90,7 +91,7 @@ if(isset($_POST['Xenviar'])){
                 }
             }
         } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
+            echo "<script> Swal.fire({title: 'Error en la consulta: . $e->getMessage()',icon: 'error', draggable: true}); </script>";
         }
     
         // Cerrar conexión

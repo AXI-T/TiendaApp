@@ -14,6 +14,7 @@
 <!--aqui pondre unos estilos locales para agrupar el input y el icono -->
 
 <body>
+    <?php include_once("navegacion.php"); ?>
     <div class="login-container">
         <div class="login-box">
             <h2 class="forms-titulo"><span> <i class="bi bi-bus-front-fill"></i> </span> Proveedores</h2>
@@ -61,7 +62,7 @@ if(isset($_POST['Xenviar'])){
     $direccion_pv = trim($_POST['direccion']);
     $telefono_pv = trim($_POST['telefono']);
     if (empty($nombre_pv) || empty($contacto_pv) || empty($direccion_pv) || empty($telefono_pv) ) {
-        die("Todos los campos son obligatorios.");
+        $swal_script = "Swal.fire({ title: 'Todos los campos son obligatorios.', icon: 'warning', draggable: true });";
     }else{
         try {
             
@@ -76,6 +77,7 @@ if(isset($_POST['Xenviar'])){
             if ($row['total'] > 0) {
                 echo "<script> Swal.fire({title: 'Intentas registrar un Proveedor Existente...',icon: 'warning', draggable: true}); </script>";
             } else {
+                
                 $sqlIst = "INSERT INTO proveedor_tb (nombre, contacto, telefono, direccion) VALUES (:nombre_pv, :contacto_pv, :telefono_pv,:direccion_pv)";
                 $stmt = $pdo->prepare($sqlIst);
                 $stmt->bindParam(':nombre_pv', $nombre_pv, PDO::PARAM_STR);
